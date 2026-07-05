@@ -5,21 +5,16 @@
 import json
 
 from ...exceptions import JSONParsingError
+from ...dtypes import ParsedDict, OptionalFilepath, ParsingObject
 from typing import Dict, Any
 from pathlib import Path
-
-#########################################################################################################
-# CUSTOM DATA TYPES
-#########################################################################################################
-
-JsonDict = Dict[str, Any]
 
 #########################################################################################################
 # JSON PARSING TOOL
 #########################################################################################################
 
 # JSON parsing function for Files.
-def json_file_parser(filepath: str | Path | None = None) -> JsonDict:
+def json_file_parser(filepath: OptionalFilepath = None) -> ParsedDict:
     if filepath is None:
         raise JSONParsingError("A JSON file path must be provided!")
     
@@ -54,7 +49,7 @@ def json_file_parser(filepath: str | Path | None = None) -> JsonDict:
 
 
 # JSON parsing function for JSON strings, bytes and bytearrays.
-def json_object_parser(json_objec: Dict[str, Any] | str | bytes | bytearray) -> JsonDict:
+def json_object_parser(json_objec: ParsingObject) -> ParsedDict:
     if isinstance(json_objec, dict):
         return json_objec
     

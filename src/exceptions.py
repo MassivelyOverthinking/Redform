@@ -3,7 +3,7 @@
 #########################################################################################################
 
 #########################################################################################################
-# CUSTOM EXCEPTIONS/ERRORS
+# BASE EXCEPTIONS
 #########################################################################################################
 
 # Base Error class
@@ -24,6 +24,14 @@ class RedformBaseError(Exception):
     def __str__(self) -> str:
         return f"{self.code}: {self.message}"
     
+#########################################################################################################
+# PARSING EXCEPTIONS
+#########################################################################################################
+    
 class JSONParsingError(RedformBaseError):
     def __init__(self, message, code = "JSON_PARSING_ERROR", _details = None):
+        super().__init__(message, code, _details)
+
+class YAMLParsingError(RedformBaseError):
+    def __init__(self, message, code = "YAML_PARSING_ERROR", _details = None):
         super().__init__(message, code, _details)

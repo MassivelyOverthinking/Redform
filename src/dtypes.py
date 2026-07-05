@@ -2,14 +2,16 @@
 # IMPORTS
 #########################################################################################################
 
-import yaml
-
-from ...exceptions import YAMLParsingError
-from typing import Dict, Any
+from typing import Dict, Any, TypeAlias
 from pathlib import Path
 
 #########################################################################################################
-# YAML PARSING TOOL
+# CUSTOM DATA TYPES
 #########################################################################################################
 
-def yaml_file_parser(filepath: str | Path | None = None) -> YamlDict:
+ParsedDict = Dict[str, Any]
+
+FilePath: TypeAlias = str | Path
+OptionalFilepath: TypeAlias = FilePath | None
+
+ParsingObject: TypeAlias = Dict[str, Any] | str | bytes | bytearray
