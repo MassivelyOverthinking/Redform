@@ -6,7 +6,6 @@ import json
 
 from ...exceptions import JSONParsingError
 from ...dtypes import ParsedDict, OptionalFilepath, ParsingObject
-from typing import Dict, Any
 from pathlib import Path
 
 #########################################################################################################
