@@ -5,7 +5,7 @@
 import json
 
 from ...exceptions import JSONParsingError
-from ...dtypes import ParsedDict, OptionalFilepath, ParsingObject
+from ...aliases import ParsedDict, OptionalFilepath, ParsingObject
 from pathlib import Path
 
 #########################################################################################################
@@ -48,13 +48,13 @@ def json_file_parser(filepath: OptionalFilepath = None) -> ParsedDict:
 
 
 # JSON parsing function for JSON strings, bytes and bytearrays.
-def json_object_parser(json_objec: ParsingObject) -> ParsedDict:
-    if isinstance(json_objec, dict):
-        return json_objec
+def json_object_parser(json_object: ParsingObject) -> ParsedDict:
+    if isinstance(json_object, dict):
+        return json_object
     
-    if isinstance(json_objec, (str, bytearray, bytes)):
+    if isinstance(json_object, (str, bytearray, bytes)):
         try:
-            data = json.loads(json_objec)
+            data = json.loads(json_object)
         except json.JSONDecodeError as error:
             raise JSONParsingError(
                 f"Invalid JSON Object - Line {error.lineno}, "

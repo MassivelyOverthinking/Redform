@@ -5,7 +5,7 @@
 import yaml
 
 from ...exceptions import YAMLParsingError                                          # Custom Exceptions
-from ...dtypes import ParsedDict, OptionalFilepath, ParsingObject                   # Custom TypeAliases
+from ...aliases import ParsedDict, OptionalFilepath, ParsingObject                   # Custom TypeAliases
 from pathlib import Path
 
 #########################################################################################################
