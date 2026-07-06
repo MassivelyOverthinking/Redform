@@ -4,8 +4,8 @@
 
 import json
 
-from ...exceptions import JSONParsingError
-from ...aliases import ParsedDict, OptionalFilepath, ParsingObject
+from data_linter.exceptions import JSONParsingError
+from data_linter.aliases import ParsedDict, OptionalFilepath, ParsingObject
 from pathlib import Path
 
 #########################################################################################################

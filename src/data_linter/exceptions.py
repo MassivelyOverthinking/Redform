@@ -9,7 +9,7 @@
 # Base Error class
 class RedformBaseError(Exception):
     def __init__(self, message: str, code: str = "REDFORM_BASE_ERROR", _details: dict | None = None):
-        super().__init__(self.message)
+        super().__init__(message)
         self.message = message
         self.code = code
         self._details = _details or {}
@@ -29,9 +29,9 @@ class RedformBaseError(Exception):
 #########################################################################################################
     
 class JSONParsingError(RedformBaseError):
-    def __init__(self, message, code = "JSON_PARSING_ERROR", _details = None):
-        super().__init__(message, code, _details)
+    def __init__(self, message: str, code: str = "JSON_PARSING_ERROR", _details: dict[str, any] | None = None):
+        super().__init__(message=message, code=code, _details=_details)
 
 class YAMLParsingError(RedformBaseError):
-    def __init__(self, message, code = "YAML_PARSING_ERROR", _details = None):
-        super().__init__(message, code, _details)
+    def __init__(self, message: str, code: str = "YAML_PARSING_ERROR", _details: dict[str, any] | None = None):
+        super().__init__(message=message, code=code, _details=_details)

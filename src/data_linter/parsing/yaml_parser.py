@@ -4,8 +4,8 @@
 
 import yaml
 
-from ...exceptions import YAMLParsingError                                          # Custom Exceptions
-from ...aliases import ParsedDict, OptionalFilepath, ParsingObject                   # Custom TypeAliases
+from data_linter.exceptions import YAMLParsingError                                          # Custom Exceptions
+from data_linter.aliases import ParsedDict, OptionalFilepath, ParsingObject                   # Custom TypeAliases
 from pathlib import Path
 
 #########################################################################################################
@@ -47,8 +47,14 @@ def yaml_file_parser(filepath: OptionalFilepath = None) -> ParsedDict:
 def yaml_object_parser(yaml_object: ParsingObject) -> ParsedDict:
     if isinstance(yaml_object, dict):
         return yaml_object
+    
+    if isinstance(yaml_object, bytearray):
+        yaml_object = bytes(yaml_object)
 
-    if isinstance(yaml_object, (str, bytes, bytearray)):
+    if isinstance(yaml_object, bytes):
+        yaml_object = yaml_object.decode("utf-8")
+
+    if isinstance(yaml_object, str):
         try:
             data = yaml.safe_load(yaml_object)
         except yaml.YAMLError as error:
