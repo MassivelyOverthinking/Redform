@@ -4,7 +4,8 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, ConfigDict, model_validator
+from .basemodel import RedformBaseModel
+from pydantic import Field, model_validator
 
 #########################################################################################################
 # PYDANTIC VALIDATION MODEL -> COLUMNS
@@ -20,8 +21,7 @@ ColumnTypes = Literal[
     "category",
 ]
 
-class ColumnContract(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+class ColumnContract(RedformBaseModel):
 
     type: ColumnTypes
     required: bool = True

@@ -27,11 +27,15 @@ class RedformBaseError(Exception):
 #########################################################################################################
 # PARSING EXCEPTIONS
 #########################################################################################################
-    
+
+# Parsing error for primary use in JSON parsing module
+# Use the _details attribute for additional information when catching errors --> get_details()
 class JSONParsingError(RedformBaseError):
     def __init__(self, message: str, code: str = "JSON_PARSING_ERROR", _details: dict[str, any] | None = None):
         super().__init__(message=message, code=code, _details=_details)
 
+# Parsing error for primary use in YAML parsing module
+# Use the _details attribute for additional information when catching errors --> get_details()
 class YAMLParsingError(RedformBaseError):
     def __init__(self, message: str, code: str = "YAML_PARSING_ERROR", _details: dict[str, any] | None = None):
         super().__init__(message=message, code=code, _details=_details)
