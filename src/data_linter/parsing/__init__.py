@@ -2,9 +2,17 @@
 # IMPORTS
 #########################################################################################################
 
+from .yaml_parser import yaml_file_parser, yaml_object_parser
+from .json_parser import json_file_parser, json_object_parser
+
 #########################################################################################################
 # PACKAGE MANAGEMENT
 #########################################################################################################
 
-__all__ = []
+__all__ = [
+    "yaml_file_parser",
+    "yaml_object_parser",
+    "json_file_parser",
+    "json_object_parser"
+]
 __version__ = "0.1.0"
