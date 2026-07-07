@@ -40,12 +40,3 @@ class YAMLParsingError(RedformBaseError):
     def __init__(self, message: str, code: str = "YAML_PARSING_ERROR", _details: dict[str, any] | None = None):
         super().__init__(message=message, code=code, _details=_details)
 
-#########################################################################################################
-# PYDANTIC EXCEPTIONS
-#########################################################################################################
-
-# Pydantic error for validating contract syntax
-# Use the _details attribute for additional information when catching errors --> get_details()
-class ValidationError(RedformBaseError):
-    def __init__(self, message: str, code: str = "PYDANTIC_VALIDATION_ERROR", _details: dict[str, any] | None = None):
-        super().__init__(message=message, code=code, _details=_details)
