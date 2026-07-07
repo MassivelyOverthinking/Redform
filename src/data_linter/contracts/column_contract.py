@@ -2,52 +2,14 @@
 # IMPORTS
 #########################################################################################################
 
-from typing import Literal, TypeAlias, Any
+from typing import Any
 from datetime import datetime, date
 
 from .basemodel import RedformBaseModel
+from ..aliases import (
+    ColumnTypes, SeverityTypes, Weekdays, ScalarValue, DateValue
+)
 from pydantic import Field, model_validator, field_validator
-
-#########################################################################################################
-# CUSSTOM DATA LITERALS
-#########################################################################################################
-
-ColumnTypes: TypeAlias = Literal[
-    "string",
-    "int",
-    "float",
-    "bool",
-    "date",
-    "datetime",
-    "category",
-]
-
-SeverityTypes: TypeAlias = Literal[
-    "error",
-    "warning",
-    "debug",
-    "info"
-]
-
-Weekdays: TypeAlias = Literal[
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-]
-
-ScalarValue: TypeAlias = str | int | float | bool
-
-DateValue: TypeAlias = datetime | date | str
-
-NumericColumn: TypeAlias = Literal["int", "float"]
-
-StringColumn: TypeAlias = Literal["string", "category"]
-
-DateColumn: TypeAlias = Literal["datetime", "date"]
 
 #########################################################################################################
 # PYDANTIC VALIDATION MODEL -> COLUMNS

@@ -2,11 +2,12 @@
 # IMPORTS
 #########################################################################################################
 
-from typing import Dict, Any, TypeAlias
+from datetime import date, datetime
+from typing import Dict, Any, TypeAlias, Literal
 from pathlib import Path
 
 #########################################################################################################
-# CUSTOM DATA TYPES
+# CUSTOM DATA TYPES & ALIASES --> GENERAL
 #########################################################################################################
 
 ParsedDict = Dict[str, Any]                                                 # Dictionary struct --> Used for handling output results in parsing module
@@ -15,3 +16,44 @@ FilePath: TypeAlias = str | Path                                            # Pa
 OptionalFilepath: TypeAlias = FilePath | None                               # Path struct --> Wrapper for FilePath alias to include 'None' functionality
 
 ParsingObject: TypeAlias = Dict[str, Any] | str | bytes | bytearray         # Object struct --> Used for handling input in object parsing modules
+
+#########################################################################################################
+# CUSTOM DATA TYPES & ALIASES --> PYDANTIC
+#########################################################################################################
+
+ColumnTypes: TypeAlias = Literal[
+    "string",
+    "int",
+    "float",
+    "bool",
+    "date",
+    "datetime",
+    "category",
+]
+
+SeverityTypes: TypeAlias = Literal[
+    "error",
+    "warning",
+    "debug",
+    "info"
+]
+
+Weekdays: TypeAlias = Literal[
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+]
+
+ScalarValue: TypeAlias = str | int | float | bool
+
+DateValue: TypeAlias = datetime | date | str
+
+NumericColumn: TypeAlias = Literal["int", "float"]
+
+StringColumn: TypeAlias = Literal["string", "category"]
+
+DateColumn: TypeAlias = Literal["datetime", "date"]
