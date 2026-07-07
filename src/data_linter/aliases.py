@@ -48,6 +48,12 @@ Weekdays: TypeAlias = Literal[
     "sunday",
 ]
 
+SourceFormat: TypeAlias = Literal[
+    "csv",
+    "parquet",
+    "json"
+]
+
 ScalarValue: TypeAlias = str | int | float | bool
 
 DateValue: TypeAlias = datetime | date | str
