@@ -12,5 +12,6 @@ class RedformBaseModel(BaseModel):
     config = ConfigDict(
         extra="forbid",
         str_strip_whitespace=True,
-        str_to_lower=True
+        str_to_lower=True,
+        frozen=True
     )
