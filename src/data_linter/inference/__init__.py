@@ -2,16 +2,9 @@
 # IMPORTS
 #########################################################################################################
 
-from .basemodel import RedformBaseModel
-from ..aliases import SourceFormat
-
 #########################################################################################################
-# PYDANTIC VALIDATION MODEL -> SOURCE
+# PACKAGE MANAGEMENT
 #########################################################################################################
 
-class SourceContract(RedformBaseModel):
-    format: SourceFormat | None = None
-    encoding: str = "utf-8"
-    delimiter: str = ","
-    has_header: bool = True
-    quote_char: str | None = '"'
+__all__ = []
+__version__ = "0.1.0"
