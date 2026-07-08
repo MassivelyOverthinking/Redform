@@ -6,6 +6,7 @@ from .basemodel import RedformBaseModel
 from ..aliases import (
     SeverityTypes
 )
+
 from pydantic import Field, model_validator
 
 #########################################################################################################
