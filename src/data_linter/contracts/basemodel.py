@@ -9,9 +9,8 @@ from pydantic import BaseModel, ConfigDict
 #########################################################################################################
 
 class RedformBaseModel(BaseModel):
-    config = ConfigDict(
+    model_config = ConfigDict(
         extra="forbid",
         str_strip_whitespace=True,
-        str_to_lower=True,
         frozen=True
     )
