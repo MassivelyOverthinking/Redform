@@ -58,6 +58,8 @@ ScalarValue: TypeAlias = str | int | float | bool
 
 DateValue: TypeAlias = datetime | date | str
 
+TargetType: TypeAlias = Literal["regression", "classification"]
+
 NumericColumn: TypeAlias = Literal["int", "float"]
 
 StringColumn: TypeAlias = Literal["string", "category"]
