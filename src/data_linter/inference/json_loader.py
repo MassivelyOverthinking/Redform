@@ -39,7 +39,7 @@ def _ndjson_loader(
     
     path_suffix = source_path.suffix
     if path_suffix.lower() not in JSON_SUFFIXES:
-        raise ValueError(f"Expected a JSON file extension but received: {path_suffix}")
+        raise ValueError(f"Expected a NDJSON file extension but received: {path_suffix}")
     
     return scan_ndjson(
         source=source_path,
