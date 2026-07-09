@@ -56,6 +56,11 @@ SourceFormat: TypeAlias = Literal[                                          # Fi
     "json"
 ]
 
+MemoryMode: TypeAlias = Literal[                                            # Memory Modes --> Supported memory estimation modes
+    "full",
+    "summary"
+]
+
 ScalarValue: TypeAlias = str | int | float | bool                           # Type struct --> Typing for handling core dtype features
 
 DateValue: TypeAlias = datetime | date | str                                # Date struct --> Typing for handling core date/datetime features

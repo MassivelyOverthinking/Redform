@@ -6,6 +6,7 @@ from .basemodel import RedformBaseModel
 from ..aliases import (
     SeverityTypes
 )
+from .memory_contract import MemoryContract
 
 from pydantic import Field, model_validator
 
@@ -29,7 +30,7 @@ class DatasetContract(RedformBaseModel):
 
     deadstop: bool = False
     severity_threshold: SeverityTypes = "error"
-    max_memory: int | float | None = Field(default=None, ge=0)
+    memory: MemoryContract | None = None
 
     @model_validator(mode="after")
     def validate_row_bounds(self) -> "DatasetContract":
