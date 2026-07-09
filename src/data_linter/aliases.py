@@ -2,6 +2,8 @@
 # IMPORTS
 #########################################################################################################
 
+import polars as pl
+
 from datetime import date, datetime
 from typing import Dict, Any, TypeAlias, Literal
 from pathlib import Path
@@ -65,3 +67,14 @@ NumericColumn: TypeAlias = Literal["int", "float"]
 StringColumn: TypeAlias = Literal["string", "category"]
 
 DateColumn: TypeAlias = Literal["datetime", "date"]
+
+
+PolarsSchema: TypeAlias = dict[str, pl.DataType]
+
+ParquetStrategy = Literal[
+    "auto",
+    "columns",
+    "row_groups",
+    "prefiltered",
+    "none",
+]
