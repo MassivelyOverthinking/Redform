@@ -14,7 +14,7 @@ CSV_SUFFIXES = [".csv"]
 def _csv_loader(
     filepath: str | Path,
     delimiter: str = ",",
-    encoding: str = "utf-8",
+    encoding: str = "utf8",
     has_header: bool = False,
     quote_char: str = '"',
     try_parse_date: bool = True

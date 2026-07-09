@@ -23,7 +23,7 @@ ParsingObject: TypeAlias = Dict[str, Any] | str | bytes | bytearray         # Ob
 # CUSTOM DATA TYPES & ALIASES --> PYDANTIC
 #########################################################################################################
 
-ColumnTypes: TypeAlias = Literal[
+ColumnTypes: TypeAlias = Literal[                                           # Column struct --> Determines the data type associated with columns
     "string",
     "int",
     "float",
@@ -33,14 +33,14 @@ ColumnTypes: TypeAlias = Literal[
     "category",
 ]
 
-SeverityTypes: TypeAlias = Literal[
+SeverityTypes: TypeAlias = Literal[                                         # Severity struct --> Used for determining the severity of Pydantic validation model
     "error",
     "warning",
     "debug",
     "info"
 ]
 
-Weekdays: TypeAlias = Literal[
+Weekdays: TypeAlias = Literal[                                              # Date struct --> Simple list of individual weekdays for date handling
     "monday",
     "tuesday",
     "wednesday",
@@ -50,28 +50,31 @@ Weekdays: TypeAlias = Literal[
     "sunday",
 ]
 
-SourceFormat: TypeAlias = Literal[
+SourceFormat: TypeAlias = Literal[                                          # File Extensions --> All current supported file extensions formats
     "csv",
     "parquet",
     "json"
 ]
 
-ScalarValue: TypeAlias = str | int | float | bool
+ScalarValue: TypeAlias = str | int | float | bool                           # Type struct --> Typing for handling core dtype features
 
-DateValue: TypeAlias = datetime | date | str
+DateValue: TypeAlias = datetime | date | str                                # Date struct --> Typing for handling core date/datetime features
 
-TargetType: TypeAlias = Literal["regression", "classification"]
+TargetType: TypeAlias = Literal["regression", "classification"]             # ML struct --> All current supported ML/AI operations for target validation
 
-NumericColumn: TypeAlias = Literal["int", "float"]
+NumericColumn: TypeAlias = Literal["int", "float"]                         
 
 StringColumn: TypeAlias = Literal["string", "category"]
 
 DateColumn: TypeAlias = Literal["datetime", "date"]
 
+#########################################################################################################
+# CUSTOM DATA TYPES & ALIASES --> FILE LOADERS
+#########################################################################################################
 
 PolarsSchema: TypeAlias = dict[str, pl.DataType]
 
-ParquetStrategy = Literal[
+ParquetStrategy: TypeAlias = Literal[
     "auto",
     "columns",
     "row_groups",
