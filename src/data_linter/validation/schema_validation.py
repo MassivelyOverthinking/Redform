@@ -2,13 +2,12 @@
 # IMPORTS
 #########################################################################################################
 
-from .collection_util import _collect_schema_lf
+import polars as pl
+
+from ..utility import _collect_schema_lf
 
 #########################################################################################################
-# PACKAGE MANAGEMENT
+# VALIDATION MODULE: POLARS SCHEMA
 #########################################################################################################
 
-__all__ = [
-    "_collect_schema_lf"
-]
-__version__ = "0.1.0"
+
