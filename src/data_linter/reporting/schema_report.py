@@ -2,17 +2,9 @@
 # IMPORTS
 #########################################################################################################
 
-from .contract import Contract
-from .column_contract import ColumnContract
-from .dataset_contract import DatasetContract
-
 #########################################################################################################
-# PACKAGE MANAGEMENT
+# REPORT: SCHEMA
 #########################################################################################################
 
-__all__ = [
-    "Contract",
-    "ColumnContract",
-    "DatasetContract"
-]
-__version__ = "0.1.0"
+class SchemaReport():
+    pass
