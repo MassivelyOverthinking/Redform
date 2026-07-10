@@ -51,20 +51,32 @@ POLARS_CATEGORY_TYPES = [
 
 class SchemaValidator():
 
-    __slots__ = ("schema", "dataset_rules", "_frozen")
+    __slots__ = (
+        "schema_rules", 
+        "dataset_rules", 
+        "lazyframe", 
+        "schema"
+    )
 
     def __init__(self, column_contracts: dict[str, ColumnContract], dataset_contract: DatasetContract):
-        self.schema = self._schema_extraction_from_contract(column_contracts)
+        self.schema_rules = self._schema_extraction_from_contract(column_contracts)
         self.dataset_rules = self._rules_extraction_from_contract(dataset_contract)
-        self._frozen = True
+        self.lazyframe = None
+        self.schema = None
 
     # Main validation method --> Produces a finalized SchemaReport
-    def validate(self, schema: pl.Schema) -> SchemaReport:
-        if not isinstance(schema, pl.Schema):
-            raise TypeError(f"Schema must be of Type: Polars Dataframe - Received {type(schema)}")
+    def validate(self, lzdf: pl.LazyFrame) -> SchemaReport:
+        if not isinstance(lzdf, pl.LazyFrame):
+            raise TypeError(f"Lazyframe must be of Type: Polars Lazyframe - Received {type(lzdf)}")
         
-    # Validates the Schema against the Column & Dataset Contract
-    def _validate_schema(self, schema: pl.Schema) -> None:
+        if self.lazyframe is None:
+            self.lazyframe = lzdf
+
+        if self.schema is None:
+            self.schema = lzdf.collect_schema()
+        
+    # Validates the Schema against the Column Contract
+    def _validate_schema(self, schema: pl.Schema) -> dict[str, any]:
         if not isinstance(schema, pl.Schema):
             raise TypeError(f"Schema must be of Type: Polars Dataframe - Received {type(schema)}")
         
@@ -75,9 +87,9 @@ class SchemaValidator():
         schema_fails = 0
         schema_passes = 0
 
-        for column_name, column_type in self.schema.items():
+        for column_name, column_type in self.schema_rules.items():
             if column_name in forbidden_columns:
-                results[column_name] = f"Column: {column_name} is a forbidden column!"
+                results[column_name] = f"FAIL | Column: {column_name}, is registered as 'forbidden'"
                 schema_fails += 1
             else:
                 received_type: pl.DataType = schema[column_name]
@@ -87,6 +99,18 @@ class SchemaValidator():
                 else:
                     results[column_name] = self._create_info_str(True, column_name, column_type, received_type)
                     schema_fails += 1
+
+        results["fails"] = schema_fails
+        results["passes"] = schema_passes
+
+        return results
+    
+    def _validate_dataset_rules(self, lf: pl.LazyFrame) -> dict[str, any]:
+        if not isinstance(lf, pl.LazyFrame):
+            raise TypeError(f"LF must be of Type: Polars Lazyframe - Received {type(lf)}")
+        
+        row_count = self.lazyframe.select(pl.len()).collect().item()
+        column_count = self.schema.len()
 
     # Helper-method for creating a information string
     def _create_info_str(self, failure: bool, column_name: str, expected_type: str, given_type: pl.DataType) -> str:
@@ -142,8 +166,3 @@ class SchemaValidator():
             "required_columns": rules.required_columns if not None else None,
             "forbidden_columns": rules.forbidden_columns if not None else None,
         }
-    
-    # Freeze class attributes for immutability.
-    def __setattr__(self, new: any, old: any):
-        if getattr(self, "_frozen", False):
-            raise AttributeError(f"Cannot modify frozen attribute: {new}")
