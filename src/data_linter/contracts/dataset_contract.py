@@ -23,6 +23,7 @@ class DatasetContract(RedformBaseModel):
     max_columns: int | None = Field(default=None, ge=0)
     exact_columns: int | None = Field(default=None, ge=0)
 
+    approved_columns: list[str] = Field(default_factory=list)
     required_columns: list[str] = Field(default_factory=list)
     forbidden_columns: list[str] = Field(default_factory=list)
     max_null_ratio: float | None = Field(default=None, ge=0, le=1)

@@ -9,7 +9,7 @@ from ..contracts import ColumnContract, DatasetContract
 from ..reporting import SchemaReport
 
 #########################################################################################################
-# VALIDATION MODULE: POLARS SCHEMA
+# VALIDATION MODULE: POLARS DATATYPES
 #########################################################################################################
 
 POLARS_INTEGER_TYPES = [
@@ -49,31 +49,27 @@ POLARS_CATEGORY_TYPES = [
     pl.Enum
 ]
 
+#########################################################################################################
+# VALIDATION MODULE: POLARS SCHEMA
+#########################################################################################################
+
+# Main Schema validation module --> Stateless instance
 class SchemaValidator():
 
     __slots__ = (
         "schema_rules", 
-        "dataset_rules", 
-        "lazyframe", 
-        "schema"
+        "dataset_rules"
     )
 
     def __init__(self, column_contracts: dict[str, ColumnContract], dataset_contract: DatasetContract):
         self.schema_rules = self._schema_extraction_from_contract(column_contracts)
         self.dataset_rules = self._rules_extraction_from_contract(dataset_contract)
-        self.lazyframe = None
-        self.schema = None
 
     # Main validation method --> Produces a finalized SchemaReport
     def validate(self, lzdf: pl.LazyFrame) -> SchemaReport:
         if not isinstance(lzdf, pl.LazyFrame):
             raise TypeError(f"Lazyframe must be of Type: Polars Lazyframe - Received {type(lzdf)}")
         
-        if self.lazyframe is None:
-            self.lazyframe = lzdf
-
-        if self.schema is None:
-            self.schema = lzdf.collect_schema()
         
     # Validates the Schema against the Column Contract
     def _validate_schema(self, schema: pl.Schema) -> dict[str, any]:
@@ -81,8 +77,9 @@ class SchemaValidator():
             raise TypeError(f"Schema must be of Type: Polars Dataframe - Received {type(schema)}")
         
         results = {}
-        forbidden_columns: list = self.dataset_rules["forbidden_columns"]
-        required_columns: list = self.dataset_rules["required_columns"]
+        forbidden_columns: set = set(self.dataset_rules["forbidden_columns"])
+        required_columns: set = set(self.dataset_rules["required_columns"])
+        approved_columns: set = set(self.dataset_rules["approved_columns"])
 
         schema_fails = 0
         schema_passes = 0
@@ -163,6 +160,7 @@ class SchemaValidator():
             "min_rows": rules.min_rows if not None else None,
             "max_rows": rules.max_rows if not None else None,
             "exact_rows": rules.exact_rows if not None else None,
-            "required_columns": rules.required_columns if not None else None,
-            "forbidden_columns": rules.forbidden_columns if not None else None,
+            "required_columns": rules.required_columns if not None else [],
+            "forbidden_columns": rules.forbidden_columns if not None else [],
+            "approved_columns": rules.approved_columnss if not None else [],
         }
