@@ -5,7 +5,7 @@
 import polars as pl
 
 from ..utility import _collect_schema_lf
-from ..contracts import ColumnContract, DatasetContract
+from ..contracts import ColumnContract, DatasetContract, TargetContract
 from ..reporting import SchemaReport
 
 #########################################################################################################
@@ -56,19 +56,29 @@ POLARS_CATEGORY_TYPES = [
 # Main Schema validation module --> Stateless instance
 class SchemaValidator():
 
+    # Internal attribute storage
     __slots__ = (
         "schema_rules", 
-        "dataset_rules"
+        "dataset_rules",
+        "target_rules"
     )
 
-    def __init__(self, column_contracts: dict[str, ColumnContract], dataset_contract: DatasetContract):
+    def __init__(
+            self, 
+            column_contracts: dict[str, ColumnContract], 
+            dataset_contract: DatasetContract, 
+            target_contract: TargetContract
+        ):
         self.schema_rules = self._schema_extraction_from_contract(column_contracts)
         self.dataset_rules = self._rules_extraction_from_contract(dataset_contract)
+        self.target_rules = self._target_extraction_from_contract(target_contract)
 
     # Main validation method --> Produces a finalized SchemaReport
     def validate(self, lzdf: pl.LazyFrame) -> SchemaReport:
         if not isinstance(lzdf, pl.LazyFrame):
             raise TypeError(f"Lazyframe must be of Type: Polars Lazyframe - Received {type(lzdf)}")
+        
+        lz_schema: pl.Schema = lzdf.collect_schema()
         
         
     # Validates the Schema against the Column Contract
@@ -89,7 +99,7 @@ class SchemaValidator():
                 results[column_name] = f"FAIL | Column: {column_name}, is registered as 'forbidden'"
                 schema_fails += 1
             else:
-                received_type: pl.DataType = schema[column_name]
+                received_type: pl.DataType = schema.get(column_name)
                 if self._check_datatype(column_type, received_type):
                     results[column_name] = self._create_info_str(False, column_name, column_type, received_type)
                     schema_passes += 1
@@ -108,6 +118,12 @@ class SchemaValidator():
         
         row_count = self.lazyframe.select(pl.len()).collect().item()
         column_count = self.schema.len()
+
+    def _validate_target_rules(self, schema: pl.Schema) -> None:
+        if not isinstance(schema, pl.Schema):
+            raise TypeError(f"Schema must be of Type: Polars Schema - Received: {type(schema)}")
+
+        pass
 
     # Helper-method for creating a information string
     def _create_info_str(self, failure: bool, column_name: str, expected_type: str, given_type: pl.DataType) -> str:
@@ -163,4 +179,13 @@ class SchemaValidator():
             "required_columns": rules.required_columns if not None else [],
             "forbidden_columns": rules.forbidden_columns if not None else [],
             "approved_columns": rules.approved_columnss if not None else [],
+        }
+    
+    def _target_extraction_from_contract(rules: TargetContract) -> dict[str, any]:
+        if not isinstance(rules, TargetContract):
+            raise TypeError(f"Rules must be of Type: TargetContract - Received {type(TargetContract)}")
+        
+        return {
+            "target_column": rules.column,
+            "target_type": rules.type
         }
