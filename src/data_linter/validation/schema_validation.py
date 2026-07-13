@@ -136,9 +136,8 @@ class SchemaValidator():
         results: list = []
 
     #########################################################################################################
-    # HELPER METHODS: DATATYPES
+    # HELPER METHODS: INTERNAL VALIDATION
     #########################################################################################################
-        
         
     # Validates the Schema against the Column Contract
     def _validate_schema(self, schema: pl.Schema) -> dict[str, any]:
@@ -184,6 +183,10 @@ class SchemaValidator():
 
         pass
 
+    #########################################################################################################
+    # HELPER METHODS: DATATYPES
+    #########################################################################################################
+
     # Helper-method for creating a information string
     def _create_info_str(self, failure: bool, column_name: str, expected_type: str, given_type: pl.DataType) -> str:
         if failure:
@@ -198,6 +201,9 @@ class SchemaValidator():
         if not isinstance(given_type, pl.DataType):
             raise TypeError(f"Given type must be of Type: Polars Datatype - Recevied {type(given_type)}")
         
+        if given_type is None:
+            return False
+        
         match expected_type.lower():
             case "string":
                 return given_type in POLARS_STRING_TYPES
@@ -205,6 +211,8 @@ class SchemaValidator():
                 return given_type in POLARS_INTEGER_TYPES
             case "float":
                 return given_type in POLARS_FLOAT_TYPES
+            case "boolen":
+                return given_type in POLARS_BOOLEAN_TYPES
             case "datetime":
                 return given_type == pl.Datetime
             case "data":
@@ -213,31 +221,46 @@ class SchemaValidator():
                 return given_type in POLARS_CATEGORY_TYPES
             case _:
                 return False
+            
+    #########################################################################################################
+    # HELPER METHODS: CONTRACT EXTRACTION
+    #########################################################################################################
 
     # Initialization method --> Extracts the necessary data from ColumnContracts
+    @staticmethod
     def _schema_extraction_from_contract(column_contracts: dict[str, ColumnContract]) -> dict[str, str]:
         if not isinstance(column_contracts, dict):
             raise TypeError(f"Column Contracts must be of Type: Dict[str, ColumnContract] - Received {type(column_contracts)}")
     
-        return {
-            key: value.type for key, value in column_contracts.items()
-        }
+        schema_rules: dict[str, str] = {}
+
+        for column_name, column_contract in column_contracts.items():
+            if not isinstance(column_name, str):
+                raise TypeError(f"Column name must be of Type: str - Received {type(column_name).__name__}")
+            
+            if not isinstance(column_contract, ColumnContract):
+                raise TypeError(f"Column contract must be of Type: ColumnContract - Received {type(column_contract).__name__}")
+            
+            schema_rules[column_name] = column_contract.type
+
+        return schema_rules
+
     
     # Initialization method --> Extracts the necessary data from DatasetContract
     def _rules_extraction_from_contract(rules: DatasetContract) -> dict[str, any]:
         if not isinstance(rules, DatasetContract):
-            raise TypeError(f"Rules must be of Type: DatasetContract - Received {type(DatasetContract)}")
+            raise TypeError(f"Rules must be of Type: DatasetContract - Received {type(DatasetContract).__name__}")
         
         return {
-            "min_columns": rules.min_columns if not None else None,
-            "max_columns": rules.max_columns if not None else None,
-            "exact_columns": rules.exact_columns if not None else None,
-            "min_rows": rules.min_rows if not None else None,
-            "max_rows": rules.max_rows if not None else None,
-            "exact_rows": rules.exact_rows if not None else None,
-            "required_columns": rules.required_columns if not None else [],
-            "forbidden_columns": rules.forbidden_columns if not None else [],
-            "approved_columns": rules.approved_columnss if not None else [],
+            "min_columns": rules.min_columns,
+            "max_columns": rules.max_columns,
+            "exact_columns": rules.exact_columns,
+            "min_rows": rules.min_rows,
+            "max_rows": rules.max_rows,
+            "exact_rows": rules.exact_rows,
+            "required_columns": tuple(rules.required_columns or []),
+            "forbidden_columns": tuple(rules.forbidden_columns or []),
+            "approved_columns": tuple(rules.approved_columnss or []),
         }
     
     def _required_extraction_from_contract(self) -> None:

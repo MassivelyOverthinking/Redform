@@ -86,3 +86,9 @@ ParquetStrategy: TypeAlias = Literal[
     "prefiltered",
     "none",
 ]
+
+#########################################################################################################
+# CUSTOM DATA TYPES & ALIASES --> SCHEMA VALIDATION
+#########################################################################################################
+
+SchemaCheckResult: TypeAlias = dict[str, Any]
