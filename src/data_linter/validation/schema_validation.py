@@ -4,6 +4,9 @@
 
 import polars as pl
 
+from types import MappingProxyType
+from typing import Mapping, Any
+
 from ..utility import _collect_schema_lf
 from ..contracts import ColumnContract, DatasetContract, TargetContract
 from ..reporting import SchemaReport
@@ -12,42 +15,62 @@ from ..reporting import SchemaReport
 # VALIDATION MODULE: POLARS DATATYPES
 #########################################################################################################
 
-POLARS_INTEGER_TYPES = [
-    pl.Int8,
-    pl.Int16,
-    pl.Int32,
-    pl.Int64,
-    pl.Int128,
-    pl.UInt8,
-    pl.UInt16,
-    pl.UInt32,
-    pl.UInt64,
-    pl.UInt128
-]
+POLARS_INTEGER_TYPES = frozenset(
+    {
+        pl.Int8,
+        pl.Int16,
+        pl.Int32,
+        pl.Int64,
+        pl.Int128,
+        pl.UInt8,
+        pl.UInt16,
+        pl.UInt32,
+        pl.UInt64,
+        pl.UInt128
+    }
+)
 
-POLARS_FLOAT_TYPES = [
-    pl.Float16,
-    pl.Float32,
-    pl.Float64,
-    pl.Decimal
-]
 
-POLARS_TEMPORAL_TYPES = [
-    pl.Duration,
-    pl.Date,
-    pl.Datetime,
-    pl.Time,
-]
+POLARS_FLOAT_TYPES = frozenset(
+    {
+        pl.Float16,
+        pl.Float32,
+        pl.Float64,
+        pl.Decimal
+    }
+)
 
-POLARS_STRING_TYPES = [
-    pl.String,
-    pl.Utf8
-]
 
-POLARS_CATEGORY_TYPES = [
-    pl.Categorical,
-    pl.Enum
-]
+POLARS_TEMPORAL_TYPES = frozenset(
+    {
+        pl.Duration,
+        pl.Date,
+        pl.Datetime,
+        pl.Time,
+    }
+)
+
+
+POLARS_STRING_TYPES = frozenset(
+    {
+        pl.String,
+        pl.Utf8
+    }
+)
+
+
+POLARS_CATEGORY_TYPES = frozenset(
+    {
+        pl.Categorical,
+        pl.Enum
+    }
+)
+
+POLARS_BOOLEAN_TYPES = frozenset(
+    {
+        pl.Boolean
+    }
+)
 
 #########################################################################################################
 # VALIDATION MODULE: POLARS SCHEMA
@@ -58,20 +81,50 @@ class SchemaValidator():
 
     # Internal attribute storage
     __slots__ = (
-        "schema_rules", 
-        "dataset_rules",
-        "target_rules"
+        "_schema",
+        "_required_columns",
+        "_optional_columns",
+        "_forbidden_columns",
+        "_approved_columns",
+        "_allow_extra_columns",
+        "_min_columns",
+        "_max_columns",
+        "_exact_columns",
+        "_target_column",
+        "_target_type",
+        "_frozen",
     )
 
     def __init__(
             self, 
             column_contracts: dict[str, ColumnContract], 
             dataset_contract: DatasetContract, 
-            target_contract: TargetContract
-        ):
-        self.schema_rules = self._schema_extraction_from_contract(column_contracts)
-        self.dataset_rules = self._rules_extraction_from_contract(dataset_contract)
-        self.target_rules = self._target_extraction_from_contract(target_contract)
+            target_contract: TargetContract | None = None,
+        ) -> None:
+        schema_rules = self._schema_extraction_from_contract(column_contracts)
+        dataset_rules = self._rules_extraction_from_contract(dataset_contract)
+        target_rules = self._target_extraction_from_contract(target_contract)
+
+        required_columns = self._required_extraction_from_contract()
+        approved_columns = frozenset(schema_rules.keys())
+
+        self._schema = MappingProxyType(schema_rules)
+        self._approved_columns = approved_columns
+        self._forbidden_columns = frozenset(dataset_rules["forbidden_columns"])
+        self._required_columns = frozenset(required_columns)
+
+        self._min_columns = dataset_rules["min_columns"]
+        self._max_columns = dataset_rules["max_columns"]
+        self._exact_columns = dataset_rules["exact_columns"]
+
+        self._target_column = target_rules["column"]
+        self._target_type = target_rules["type"]
+
+        self._frozen = True
+
+    #########################################################################################################
+    # VALIDATION MODULE: PUBLIC API
+    #########################################################################################################
 
     # Main validation method --> Produces a finalized SchemaReport
     def validate(self, lzdf: pl.LazyFrame) -> SchemaReport:
@@ -79,6 +132,12 @@ class SchemaValidator():
             raise TypeError(f"Lazyframe must be of Type: Polars Lazyframe - Received {type(lzdf)}")
         
         lz_schema: pl.Schema = lzdf.collect_schema()
+
+        results: list = []
+
+    #########################################################################################################
+    # HELPER METHODS: DATATYPES
+    #########################################################################################################
         
         
     # Validates the Schema against the Column Contract
@@ -181,6 +240,9 @@ class SchemaValidator():
             "approved_columns": rules.approved_columnss if not None else [],
         }
     
+    def _required_extraction_from_contract(self) -> None:
+        pass
+    
     def _target_extraction_from_contract(rules: TargetContract) -> dict[str, any]:
         if not isinstance(rules, TargetContract):
             raise TypeError(f"Rules must be of Type: TargetContract - Received {type(TargetContract)}")
@@ -189,3 +251,12 @@ class SchemaValidator():
             "target_column": rules.column,
             "target_type": rules.type
         }
+    
+    #########################################################################################################
+    # VALIDATION MODULE: MAGIC METHODS
+    #########################################################################################################
+
+    def __setattr__(self, name, value):
+        if getattr(self, "_frozen", False):
+            raise AttributeError(f"{self.__class__.__name__} is immutable after initialization!")
+        super().__setattr__(name, value)
